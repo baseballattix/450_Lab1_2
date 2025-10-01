@@ -1,4 +1,5 @@
 #include <main.h>
+#include <LCD.h>
 
 const struct State {
 uint32_t Out;
@@ -67,6 +68,27 @@ int main(void){
     
     Pt = goN;
     
+    const char *StateNames[15] = {
+    "Go N",
+    "Wait N",
+    "Go E",
+    "Wait E",
+    "Check N",
+    "N to Walk",
+    "Check E",
+    "E to Walk",
+    "PreWalk",
+    "Go Walk",
+    "HurryW1",
+    "HurryW2",
+    "HurryW3",
+    "HurryW4",
+    "StopWalk"
+};
+
+LCD_Init();
+LCD_Clear();
+
 while(1) {
 
 uint8_t north = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_15);
@@ -81,17 +103,14 @@ else if(north && !east && !ped)      Input = 4;
 else if(north && !east && ped)       Input = 5; 
 else if(north && east && !ped)       Input = 6; 
 else if(north && east && ped)        Input = 7; 
-
-
-   
+  
     Pt = FSM[Pt].Next[Input];
-
-    
-    int32_t bMask = 0x1FE;  // PB1-PB8
+  
+    int32_t bMask = 0x1FE;  
     uint32_t oValue = (FSM[Pt].Out << 1) & bMask;
     GPIOB->ODR = (GPIOB->ODR & ~bMask) | oValue;
-
-    // Wait for the specified state time
+    LCD_Clear();
+    LCD_OutString((char*)StateNames[Pt]);
     HAL_Delay(FSM[Pt].Time);
 }
 }
