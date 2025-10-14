@@ -4,9 +4,9 @@
 #define DELAY_US(x)  for (volatile uint32_t _i = 0; _i < ((x) * 8); _i++) { __NOP(); }
 
 
-#define LCD_DMASK     0x0F
-#define LCD_RS_BIT    (1U << 4)
-#define LCD_E_BIT     (1U << 5)
+#define LCD_DMASK 0x0F
+#define LCD_RS_BIT (1U << 4)
+#define LCD_E_BIT (1U << 5)
 
 static inline void set_rs(int rs) {
   if (rs) GPIOC->BSRR = LCD_RS_BIT; else GPIOC->BRR = LCD_RS_BIT;
@@ -37,9 +37,9 @@ static void write8(uint8_t val, int rs) {
 
   
   if (val == 0x01 || val == 0x02) {
-    for (volatile uint32_t i = 0; i < (2000 * 8); i++) __NOP();  // ~2ms
+    for (volatile uint32_t i = 0; i < (2000 * 8); i++) __NOP();  
   } else {
-    for (volatile uint32_t i = 0; i < (50 * 8); i++) __NOP();    // ~50us
+    for (volatile uint32_t i = 0; i < (50 * 8); i++) __NOP();    
   }
 }
 
@@ -82,9 +82,10 @@ void LCD_Init(void) {
 
   lcd_4bit_wakeup();
 
-  LCD_OutCMD(0x28); // 4-bit, 2-line, 5x8
-  LCD_OutCMD(0x08); // display off
+  LCD_OutCMD(0x28); 
+  LCD_OutCMD(0x08); 
   LCD_Clear();
-  LCD_OutCMD(0x06); // entry mode set
-  LCD_OutCMD(0x0C); // display on, cursor off, blink off
+  LCD_OutCMD(0x06); 
+  LCD_OutCMD(0x0C); 
 }
+//https://chatgpt.com/share/68edcbf0-1a2c-800b-850a-e61b4262a53f
