@@ -3,8 +3,9 @@
 
 const struct State {
 uint32_t Out;
-uint32_t Time; // 10 ms units
-uint32_t Next[8]; // list of next states
+uint32_t Time; 
+uint32_t Next[8]; 
+char *statename;
 };
 typedef const struct State STyp;
 #define goN 0
@@ -23,21 +24,21 @@ typedef const struct State STyp;
 #define hurryWalk4 13
 #define stopWalk 14
 STyp FSM[15] = {
-{0x85,1000,{goN,checkN,waitN,checkN,goN,checkN,waitN,checkN}},
-{0x89, 250,{goE,goE,goE,goE,goE,goE,goE,goE}},
-{0x31,1000,{goE,checkE,goE,checkE,waitE,checkE,waitE,checkE}},
-{0x51, 250,{goN,goN,goN,goN,goN,goN,goN,goN}},
-{0x85, 2000, {goN,goNtoWalk,goN,goNtoWalk,goN,goNtoWalk,goN,goNtoWalk}}, 
-{0x89, 250, {preWalk,preWalk,preWalk,preWalk,preWalk,preWalk,preWalk,preWalk}},
-{0x31, 2000, {goE,goEtoWalk,goE,goEtoWalk,goE,goEtoWalk,goE,goEtoWalk}}, 
-{0x51, 250, {preWalk,preWalk,preWalk,preWalk,preWalk,preWalk,preWalk,preWalk}},
-{0x91, 500, {goWalk,goWalk,goWalk,goWalk,goWalk,goWalk,goWalk,goWalk}},
-{0x92, 1000, {hurryWalk1,hurryWalk1,hurryWalk1,hurryWalk1,hurryWalk1,hurryWalk1,hurryWalk1,hurryWalk1}},
-{0x91, 250, {hurryWalk2,hurryWalk2,hurryWalk2,hurryWalk2,hurryWalk2,hurryWalk2,hurryWalk2,hurryWalk2}},
-{0x90, 250, {hurryWalk3,hurryWalk3,hurryWalk3,hurryWalk3,hurryWalk3,hurryWalk3,hurryWalk3,hurryWalk3}},
-{0x91,250, {hurryWalk4,hurryWalk4,hurryWalk4,hurryWalk4,hurryWalk4,hurryWalk4,hurryWalk4,hurryWalk4}},
-{0x90,250, {stopWalk,stopWalk,stopWalk,stopWalk,stopWalk,stopWalk,stopWalk,stopWalk}},
-{0x91,1000, {goN,goWalk,goE,goWalk,goN,goWalk,goN,goWalk}},
+{0x85,1000,{goN,checkN,waitN,checkN,goN,checkN,waitN,checkN},"goN"},
+{0x89, 250,{goE,goE,goE,goE,goE,goE,goE,goE},"waitN"},
+{0x31,1000,{goE,checkE,goE,checkE,waitE,checkE,waitE,checkE},"goE"},
+{0x51, 250,{goN,goN,goN,goN,goN,goN,goN,goN},"waitE"},
+{0x85, 2000, {goN,goNtoWalk,goN,goNtoWalk,goN,goNtoWalk,goN,goNtoWalk},"checkN"}, 
+{0x89, 250, {preWalk,preWalk,preWalk,preWalk,preWalk,preWalk,preWalk,preWalk},"goNtoWalk"},
+{0x31, 2000, {goE,goEtoWalk,goE,goEtoWalk,goE,goEtoWalk,goE,goEtoWalk},"checkE"}, 
+{0x51, 250, {preWalk,preWalk,preWalk,preWalk,preWalk,preWalk,preWalk,preWalk},"goEtoWalk"},
+{0x91, 500, {goWalk,goWalk,goWalk,goWalk,goWalk,goWalk,goWalk,goWalk},"preWalk"},
+{0x92, 1000, {hurryWalk1,hurryWalk1,hurryWalk1,hurryWalk1,hurryWalk1,hurryWalk1,hurryWalk1,hurryWalk1},"goWalk"},
+{0x91, 250, {hurryWalk2,hurryWalk2,hurryWalk2,hurryWalk2,hurryWalk2,hurryWalk2,hurryWalk2,hurryWalk2},"hurryWalk1"},
+{0x90, 250, {hurryWalk3,hurryWalk3,hurryWalk3,hurryWalk3,hurryWalk3,hurryWalk3,hurryWalk3,hurryWalk3},"hurryWalk2"},
+{0x91,250, {hurryWalk4,hurryWalk4,hurryWalk4,hurryWalk4,hurryWalk4,hurryWalk4,hurryWalk4,hurryWalk4},"hurryWalk3"},
+{0x90,250, {stopWalk,stopWalk,stopWalk,stopWalk,stopWalk,stopWalk,stopWalk,stopWalk},"hurryWalk4"},
+{0x91,1000, {goN,goWalk,goE,goWalk,goN,goWalk,goN,goWalk},"stopWalk"},
 };
 
 
@@ -68,23 +69,7 @@ int main(void){
     
     Pt = goN;
     
-    const char *StateNames[15] = {
-    "Go N",
-    "Wait N",
-    "Go E",
-    "Wait E",
-    "Check N",
-    "N to Walk",
-    "Check E",
-    "E to Walk",
-    "PreWalk",
-    "Go Walk",
-    "HurryW1",
-    "HurryW2",
-    "HurryW3",
-    "HurryW4",
-    "StopWalk"
-};
+    
 
 LCD_Init();
 LCD_Clear();
@@ -110,7 +95,7 @@ else if(north && east && ped)        Input = 7;
     uint32_t oValue = (FSM[Pt].Out << 1) & bMask;
     GPIOB->ODR = (GPIOB->ODR & ~bMask) | oValue;
     LCD_Clear();
-    LCD_OutString((char*)StateNames[Pt]);
+    LCD_OutString(FSM[Pt].statename);
     HAL_Delay(FSM[Pt].Time);
 }
 }
